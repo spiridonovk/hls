@@ -1,0 +1,33 @@
+stages:
+    - docker-dev
+
+variables:
+    DOCKER_HOST: tcp://localhost:2375
+
+before_script:
+    - cd $GOPATH/src
+    - mkdir -p git.wildberries.ru/$CI_PROJECT_NAMESPACE
+    - cd git.wildberries.ru/$CI_PROJECT_NAMESPACE
+    - ln -s $CI_PROJECT_DIR
+    - cd $CI_PROJECT_NAME
+
+
+
+docker-dev:
+    before_script:
+        - echo ""
+    when: manual
+    image: docker:latest
+    services:
+      - docker:dind
+    tags:
+      - golang
+      - linux
+    stage: docker-dev
+    script:
+      - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN git.wildberries.ru:4567
+      - VERSION=$(cat VERSION)
+      - BUILD_DATE=$(date '+%Y%m%d.%H%M')
+      - docker build -t $CI_REGISTRY/$CI_PROJECT_PATH/dev:$BUILD_DATE .
+      - docker push $CI_REGISTRY/$CI_PROJECT_PATH/dev:$BUILD_DATE
+    
