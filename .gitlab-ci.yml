@@ -21,8 +21,8 @@ docker-dev:
     services:
       - docker:dind
     tags:
-      - golang
-      - linux
+      - docker
+      - 0277ea0f
     stage: docker-dev
     script:
       - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN git.wildberries.ru:4567
